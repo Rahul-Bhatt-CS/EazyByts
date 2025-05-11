@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolios</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<script>
+        async function fetchdata() {
+            const response = await fetch(`http://localhost:8080/api/fetchdata`);
+            return await response.json();
+        }
+
+
+        let result = fetchdata();
+        result.then((data)=>{
+            const container = document.querySelector(".portfolioContainer");
+                for(i = 0;i<data.length;i++){
+                    const entry = document.createElement('div');
+                    
+                    
+                    
+                    entry.addEventListener('click',()=>{
+                        const emailuse = document.createElement('div');
+                        emailuse.className = 'test';
+                        emailuse.id = `${entry.id}`;
+                        
+            document.querySelector("body").appendChild(emailuse);
+                        fetch(`http://localhost:8080/api/fetchdata/${entry.id}`)
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.querySelector(".user_name").innerHTML = data.name;
+            document.querySelector("#user_name").innerHTML = data.name;
+            document.querySelector(".user_role").innerHTML = data.role;
+            const pContainer = document.querySelector(".projectscontainer");
+            for(i = 0;i<data.projects.length;i++){
+                const pentry = document.createElement('div');
+                pentry.className = 'project';
+                pentry.innerHTML = `<iframe src="${data.links[i]}"></iframe>
+                <h3>${data.projects[i]}</h3>`;
+                pContainer.appendChild(pentry);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+        document.getElementById('portfoliodisplay').style.display = 'block';
+        document.getElementById('container').style.display = 'none';
+                    })
+                    
+                    
+                    
+                    entry.className = 'portfolio';
+                    entry.id = `${data[i].username}`;
+                    entry.innerHTML = `<h3>Portfolio of ${data[i].name}</h3>
+                    <h4>${data[i].role}</h4>`;
+                    container.appendChild(entry);
+                }
+        })
+
+
+
+        function sendContactData(){
+            event.preventDefault();
+            const name = document.getElementById('fname').value;
+            const sender_email = document.getElementById('email').value;
+            const tel_number= document.getElementById('tel').value;
+            const message = document.getElementById('subject').value;
+            
+            
+            
+            fetch(`http://localhost:8080/api/fetchdata/${document.querySelector('.test').id}`)
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const receiver_email = data.email;
+                const datas = {name,sender_email,receiver_email ,tel_number,message};
+        fetch("http://localhost:8080/api/contact/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datas)
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log("Success:", result);
+        alert("User data sent successfully!");
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Failed to send data.");
+      });
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        
+        });
+        }
+</script>
+<body style="font-family:calibri;margin: 0%;">
+    <div class="portfolioContainer" id="container">
+    </div>
+
+
+
+
+
+
+
+    <div id="portfoliodisplay" style="margin: 0%;">
+        <div style="background-color: white; width: 100%; display: flex; flex-direction: column;align-items: center; padding-bottom: 50px;">
+            <nav style="display: flex; flex-direction: row; justify-content: space-between; width: 90%; align-items: center;">
+                <h3 class="user_name" style="font-size: x-large;">
+                    
+                </h3>
+                <h3 style="font-size: x-large;">
+                    =
+                </h3>
+            </nav>
+
+            <div class="description">
+                <div class="intro_text" style="display: flex;align-items: center; flex-direction: column;">
+                    
+                    <div class="pfp">
+                        <img src="engineer_worker_or_construction_worker_foreman_character_hand_drawn_cartoon_illustration.jpg" style="height: 200px;margin-top: 8%; border-radius: 50%;">   
+                    </div>
+                    <h3>
+                        Hello I'm
+                    </h3>
+                    <h1 id="user_name" style="font-size: xx-large;margin: 0%;">
+                        
+                    </h1>
+                    <h1 class="user_role" style="font-size: large; font-weight: 500; margin: 0%;">
+                        Role
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="radius">
+            <div class="projects" style="display: flex;flex-direction: column ;width: 45%; height: 100%;margin-top: 10%;">
+                <div class="heading" style="font-size: x-large; font-weight: 600;width: 90%; height: 100%; padding: 4%; background-color: rgba(255, 255, 255, 0.725);margin-top: 15px; border-radius: 10px;">
+                    Projects
+                </div>
+                <div class="projectscontainer">
+                </div>
+            </div>
+
+            <div style="width: 45%;">
+                <form  id="form_container" style="font-family: calibri;
+                font-size: 18px;
+                display: flex;
+                flex-direction: column;
+                padding-left: 15px;
+                padding-top: 30px;
+                color: rgba(255, 255, 255, 0.619);" onsubmit="return sendContactData()">
+                    
+                    <label class="form_item" for="fname">Name*</label>
+                    <input type="text" id="fname" name="firstname" required>
+                        <label class="form_item" for="email">Email*</label>
+                        <input type="email" id="email" required>
+                            <label class="form_item" for="tel">Contact Number</label>
+                            <input type="tel" id="tel" name="telephone">  
+                    <label class="form_item">Leave me a Message😉*</label>
+                    <textarea id="subject" name="subject" style="height:200px" required></textarea>
+                
+                    <input id="submit_button" class="form" type="submit" id="submitted" value="SUBMIT">
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

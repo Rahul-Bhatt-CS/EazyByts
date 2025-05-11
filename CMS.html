@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio-CMS</title>
+</head>
+<script>
+    let i = 0;
+    let k = 0;
+    let projects = [];
+    let links = [];
+    function addProject() {  
+      i = i+1;
+      k = k+1;
+      const container = document.getElementById('projectsContainer');
+      const entry = document.createElement('div');
+      entry.className = 'project-entry';
+      entry.innerHTML = `<div style="display:flex;flex-direction:row;margin-top:15px;"><textarea style="width:45%;max-width:45%;padding:1%;" name="projects[]" id="${i}" placeholder="Project description" required></textarea><textarea style="width:45%;margin-left:10px;padding:1%" name="project" id="url${k}" placeholder="Project URL if no URL then enter '#'" required></textarea></div>`;
+      container.appendChild(entry);
+    }
+
+    function removeProject(button) {
+        document.getElementById(i).parentElement.remove();
+        i = i-1;
+        k = k-1;
+    }
+
+
+    function senddata(){
+      event.preventDefault();
+        const username = document.getElementById("username").value;
+        const role = document.getElementById("role").value;
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email_address").value;
+        for(l = 1;l<=k;l++){
+          if(!(links.includes(document.getElementById(`url${l}`).value))){
+            links.push(document.getElementById(`url${l}`).value);
+          }
+        }
+        for(j = 1;j<=i;j++){
+          if(!(projects.includes(document.getElementById(j).value))){
+            projects.push(document.getElementById(j).value);
+          }
+        }
+
+        const data = {username, name, role, email, projects,links};
+        fetch("http://localhost:8080/api/newdata/userdetails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log("Success:", result);
+        alert("User data sent successfully!");
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Failed to send data.");
+      });
+    }
+  </script>
+<body style="font-family: calibri;background-color: olivedrab; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+  <div style="padding: 2%;border-radius: 20px;margin-top: 40px; background-color: rgba(119, 136, 153, 0.7);"> 
+    <h2>
+        Welcome to Portfolio CMS 
+    </h2>
+    <h5 style="font-weight: 500;font-size: large;">
+        This is a Content management System so that you just need to submit your data and a website will be created easily just for you.
+    </h5>
+
+    <form id="userForm" onsubmit="senddata()">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+    
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+    
+        <label for="role">Role:</label><br>
+        <input type="text" id="role" name="role" required><br><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email_address" name="role" required><br><br>
+        
+        <label>Projects:</label>
+        <button type="button" style="padding: .5rem;width: 200px;" onclick="removeProject(this)">Remove</button>
+        <button type="button" style="padding: .5rem;width: 200px;" onclick="addProject()" style="margin-top: 10px;">Add Project</button><br>
+        <div id="projectsContainer">
+        </div>
+        <br><br>
+    
+        <input type="submit" value="Submit" style="padding: 1rem;width: 200px;">
+      </form>
+  </div>
+</body>
+</html>
+
